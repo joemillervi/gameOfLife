@@ -15,10 +15,11 @@ var Engine = (function(global) {
   // Function to make initial grid and set alive cells according to startingCellArr
   function makeCells(width, height, startingCellArr, cellConstructor) {
     grid.width = width;
+    grid.height = height;
     var cellArr = [];
-    for(var i = 0; i < width; i++) {
-      for(var j = 0; j < height; j++) {
-        cellArr.push(new cellConstructor(i, j).setLifeStatus(startingCellArr))
+    for(var y = 0; y < width; y++) {
+      for(var x = 0; x < height; x++) {
+        cellArr.push(new cellConstructor(x, y).setLifeStatus(startingCellArr))
       }    
     }
     return cellArr;
@@ -46,64 +47,69 @@ var Engine = (function(global) {
   }
 
   // Add property currentGrid to object grid and fill it
-  grid.currentGrid = makeCells(3, 2, [{x : 0, y : 0}, {x: 0, y:1}, {x : 1, y : 0}], Cell);
+  grid.currentGrid = makeCells(2, 2, [{x : 0, y : 0}, {x: 0, y:1}, {x : 1, y : 0}], Cell);
   console.log(grid.currentGrid)
 
   /****** Updating the grid ******/
 
   // Function that will update life status of each cell according to currentRule
-  // and return a new array of cells
-  function updateCells(arr, currentRule) {
+  // of Cell.prototype.rules and return a new array of cells
+  function updateCells(arr) {
     var nextGrid = [];
     arr.forEach(function(x) {
-      console.log(x)
-      nextGrid.push(x.setRules(currentRule))
+      console.log(x);
+      nextGrid.push(updateCell(x));
     });
     return nextGrid;
   }
 
-  // Function that assigns Cell.prototype.setRules to be a function that sets a cells life status
-  // depending on the rules passed to makeSetRules
-  function makeSetRules(rules) {
-    Cell.prototype.setRules = function(rules) {
-    var x = this.x;
-    var y = this.y;
+  // Function that returns a new, updated object literal that still inherits from Cell.prototype
+  function updateCell(obj) {
+    var newObj = Object.create(Cell.prototype);
+    var x = newObj.x = obj.x;
+    var y = newObj.y = obj.y;
+    newObj.life = obj.life;
     var numAliveNeighbours = findAliveNeighbours(x, y);
-    this.life = rules(numAliveNeighbours)
-    }
+    console.log('alive neighbours:', numAliveNeighbours)
+    // Set life status according to Cell.prototype.rules current rules
+    newObj.rules(numAliveNeighbours);
+    return newObj;
   }
 
-  // Classic (default) rules that need to be passed to setRules
-  function classicRules(n) {
-    if(n < 2) return 0;
-    if(n === 2 || n === 3) return this.alive;
-    if(n > 3) return 0;
-    if(n === 3) return 1;
+  // Classic (default) rules
+  Cell.prototype.rules = function(n) {
+    if(n < 2) this.life = 0;
+    if(n === 2) this.life = this.life;
+    if(n > 3) this.life = 0;
+    if(n === 3) this.life = 1;
   }
 
-// Function that will return the amount of alive neighbours for a given cell location
+// Function that will return the amount of alive neighbours for a given cell location 
+// in grid.currentGrid
 function findAliveNeighbours(x, y) {
   var counter = 0;
    for(var i = x-1; i < x + 2; i++) {
     for(var j = y - 1; j < y + 2; j++) {
       if(i === x && j === y) {
+        console.log('found self', i, j)
         continue;
       }
       // Checks to see if cell is off grid
-      if(grid.currentGrid[i + grid.width * j] === undefined) {
+      if(i > grid.width - 1 || j > grid.height - 1 || i < 0 || j < 0) {
+        console.log('off grid', i, j)
         continue;
       }
       if(grid.currentGrid[i + grid.width * j].life) {
+        console.log('found life', grid.currentGrid[i + grid.width * j], i, j)
         counter++;
       }
     }
   }
-  console.log('counter', counter)
   return counter;
 }
   
-  makeSetRules(classicRules);
-  updateCells(grid.currentGrid, classicRules)
+  var newGrid = updateCells(grid.currentGrid)
+  console.log(newGrid)
 
 
 
