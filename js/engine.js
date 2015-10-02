@@ -1,59 +1,37 @@
 // Engine.js
-// This file provides functionality to render and update the grid. It also 
-// The canvas context (ctx) is made available globally, as are other utilities.
+// This file provides functionality to render and update the grid, 
+// change the rules of the game, and set initial cells.
 
 var Engine = (function(global) {
-
-/*
+  // Accesses to global scope
   var doc = global.document,
-      win = global.window,
-      canvas = doc.createElement('canvas'),
-      ctx = canvas.getContext('2d'),
+      win = global.window;
 
-  canvas.width = 800
-  canvas.height = 600
-  doc.body.appendChild(canvas);
+  /****** Initial grid setup ******/
 
-  // Called by main, and itself calls all functions which may need to update entity's data
-  function update() {
-    updateEntities() 
-  }
+  // Create grid object
+  var grid = {}
 
-  // This loops through all blocks and calls their update method
-  function updateEntities() {
-    allBlocks.forEach(function(block) {
-      block.update(some var here maybe ?SPEED? );
-    });
-  }
-
-*/
-
-
-
-  // Function that returns the initial array of cell objects, each with their
-  // respective coordinate point. 
-    // Parameters include: 
-      // - Width and height of grid specified in number of cells
-      // - Array of the initial cells that should be set to true (alive)
-      // - the Cell constructor function
+  // Function to make initial grid and set alive cells according to startingCellArr
   function makeCells(width, height, startingCellArr, cellConstructor) {
+    grid.width = width;
     var cellArr = [];
-    for(var i = 0; i < height; i++) {
-      for(var j = 0; j < width; j++) {
-        cellArr.push(new cellConstructor(j, i).setLifeStatus(startingCellArr))
+    for(var i = 0; i < width; i++) {
+      for(var j = 0; j < height; j++) {
+        cellArr.push(new cellConstructor(i, j).setLifeStatus(startingCellArr))
       }    
     }
     return cellArr;
   }
 
-  // Constructor function that creates each cell object.
-  function Cell(j, i) {
-    this.x = j;
-    this.y = i;
+  // Constructor function that creates each cell object
+  var Cell = function (x, y, life) {
+    this.x = x;
+    this.y = y;
     return this;
   }
 
-  // Cell.prototype method that sets a cells life to false unless it's coordinates are in an array.
+  // Cell.prototype method that sets a cells life to false unless it's coordinates are in startingCellArr
   Cell.prototype.setLifeStatus = function(arr) {
     for(var i = 0; i < arr.length; i++) {
       if(arr[i].x === this.x && arr[i].y === this.y) {
@@ -67,42 +45,70 @@ var Engine = (function(global) {
     return this;
   }
 
-  // Make grid object that will carry the current status of the grid and fill it.
-  var grid = {}
-  grid.currentGrid = makeCells(8, 10, [{x : 0, y : 0}, {x: 2, y:3}], Cell);
+  // Add property currentGrid to object grid and fill it
+  grid.currentGrid = makeCells(3, 2, [{x : 0, y : 0}, {x: 0, y:1}, {x : 1, y : 0}], Cell);
+  console.log(grid.currentGrid)
 
-  // Takes callback function currentRule that decides how each cell will be altered and returns a new array.
+  /****** Updating the grid ******/
+
+  // Function that will update life status of each cell according to currentRule
+  // and return a new array of cells
   function updateCells(arr, currentRule) {
     var nextGrid = [];
     arr.forEach(function(x) {
-      nextCell.push(x.setRules(currentRule))
+      console.log(x)
+      nextGrid.push(x.setRules(currentRule))
     });
     return nextGrid;
   }
 
+  // Function that assigns Cell.prototype.setRules to be a function that sets a cells life status
+  // depending on the rules passed to makeSetRules
+  function makeSetRules(rules) {
+    Cell.prototype.setRules = function(rules) {
+    var x = this.x;
+    var y = this.y;
+    var numAliveNeighbours = findAliveNeighbours(x, y);
+    this.life = rules(numAliveNeighbours)
+    }
+  }
+
   // Classic (default) rules that need to be passed to setRules
   function classicRules(n) {
-    if(n < 2) return 1;
+    if(n < 2) return 0;
     if(n === 2 || n === 3) return this.alive;
     if(n > 3) return 0;
     if(n === 3) return 1;
   }
-    
-  // Function that passes Cell.prototype.setRules whatever rules we want for when we call updateCells.
-  // This allows us to dynamically change the rules of the game. 
-  // Cell.prototype.setRules sets x, y, and finds the number of alive neighbors. 
-  // It then sets the life of the cell depending on rules.
-  function setCellProtoRule(rules) {
-    Cell.prototype.setRules = function(rules) {
-    var x = this.x;
-    var y = this.y;
 
-    var neighbors = grid.currentGrid[]
-
-    this.life = rules(neighbors)
+// Function that will return the amount of alive neighbours for a given cell location
+function findAliveNeighbours(x, y) {
+  var counter = 0;
+   for(var i = x-1; i < x + 2; i++) {
+    for(var j = y - 1; j < y + 2; j++) {
+      if(i === x && j === y) {
+        continue;
+      }
+      // Checks to see if cell is off grid
+      if(grid.currentGrid[i + grid.width * j] === undefined) {
+        continue;
+      }
+      if(grid.currentGrid[i + grid.width * j].life) {
+        counter++;
+      }
     }
   }
+  console.log('counter', counter)
+  return counter;
+}
+  
+  makeSetRules(classicRules);
+  updateCells(grid.currentGrid, classicRules)
 
-  setCellProtoRule(classicRules);
-  // */
+
+
+
+
+
+
 }(this)) 
