@@ -6,5 +6,68 @@
   <script src="js/app.js">var hi = 'hi'</script>
 </head>
 <body>
-  <canvas
+
 </body>
+
+<style type="text/css">
+  .cell {
+    background-color: red;
+    float:left;
+
+
+
+  }
+  body {
+    background-color: blue;
+    margin: 0;
+
+
+
+
+  }
+</style>
+
+
+<script>
+  console.log('width: ' + window.innerWidth, 'height: ' + window.innerHeight)
+
+  var windowWidth = window.innerWidth;
+  var windowHeight = window.innerHeight;
+  var area = windowWidth * windowHeight;
+  var size = 20;
+
+
+  var heightSize = size;
+  console.log(widthDiff)
+
+  widthSize = size += widthDiff/size;
+  console.log(widthSize)
+  // console.log(widthSize)
+
+  // find best size within +- 1px
+
+
+
+  w = Math.floor(windowWidth / size);
+  h = Math.floor(windowHeight / size);
+
+  var parentDiv = document.createElement('div');
+  parentDiv.className = 'grid';
+  parentDiv.innerHtml = 'hi'
+  
+  for(var y = 0; y < h; y++) {
+    for(var x = 0; x < w; x++) {
+      var cellDiv = document.createElement('div')
+      cellDiv.className = 'cell'
+      cellDiv.style.height = heightSize + 'px'; 
+      cellDiv.style.width = widthSize + 'px'; 
+      parentDiv.appendChild(cellDiv)
+    }
+  }
+
+  
+  document.body.appendChild(parentDiv)
+
+
+
+</script>

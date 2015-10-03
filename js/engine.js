@@ -13,13 +13,13 @@ var Engine = (function(global) {
   var grid = {}
 
   // Function to make initial grid and set alive cells according to startingCellArr
-  function makeCells(width, height, startingCellArr, cellConstructor) {
+  function makeCells(width, height, startingCellArr) {
     grid.width = width;
     grid.height = height;
     var cellArr = [];
     for(var y = 0; y < width; y++) {
       for(var x = 0; x < height; x++) {
-        cellArr.push(new cellConstructor(x, y).setLifeStatus(startingCellArr))
+        cellArr.push(new Cell(x, y).setLifeStatus(startingCellArr))
       }    
     }
     return cellArr;
@@ -84,35 +84,42 @@ var Engine = (function(global) {
     if(n === 3) this.life = 1;
   }
 
-// Function that will return the amount of alive neighbours for a given cell location 
-// in grid.currentGrid
-function findAliveNeighbours(x, y) {
-  var counter = 0;
-   for(var i = x-1; i < x + 2; i++) {
-    for(var j = y - 1; j < y + 2; j++) {
-      if(i === x && j === y) {
-        console.log('found self', i, j)
-        continue;
-      }
-      // Checks to see if cell is off grid
-      if(i > grid.width - 1 || j > grid.height - 1 || i < 0 || j < 0) {
-        console.log('off grid', i, j)
-        continue;
-      }
-      if(grid.currentGrid[i + grid.width * j].life) {
-        console.log('found life', grid.currentGrid[i + grid.width * j], i, j)
-        counter++;
+  // Function that will return the amount of alive neighbours for a given cell location 
+  // in grid.currentGrid
+  function findAliveNeighbours(x, y) {
+    var counter = 0;
+     for(var i = x-1; i < x + 2; i++) {
+      for(var j = y - 1; j < y + 2; j++) {
+  //      console.log(i,j)
+        if(i === x && j === y) {
+          console.log('found self', i, j)
+          continue;
+        }
+        // Checks to see if cell is off grid
+        if(i > grid.width - 1 || j > grid.height - 1 || i < 0 || j < 0) {
+          console.log('off grid', i, j)
+          continue;
+        }
+        if(grid.currentGrid[i + grid.width * j].life) {
+          console.log('found life', grid.currentGrid[i + grid.width * j], i, j)
+          counter++;
+        }
       }
     }
+    return counter;
   }
-  return counter;
-}
-  
-  var newGrid = updateCells(grid.currentGrid)
-  console.log(newGrid)
+    // ALWAYS HAS TO BE SET TO CURRENT GRID.CURRENTGRID
+    grid.currentGrid = updateCells(grid.currentGrid)
+    console.log(grid.currentGrid)
+    grid.currentGrid = updateCells(grid.currentGrid)
+    console.log(grid.currentGrid)
+ 
+  /****** Writing to the DOM ******/
 
+  // Function that reads the window size and calls makeCells accordingly.
+  function printInitialGrid() {
 
-
+  }
 
 
 
