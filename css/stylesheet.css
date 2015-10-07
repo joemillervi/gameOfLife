@@ -21,7 +21,14 @@
     }
     #title {
       position:relative;
-      top:10px;
+      display: inline-block;
+      top:4px;
+    }
+    #controls {
+      position:relative;
+      display: inline-block;
+      top:6px;
+      left:1em;
     }
     body {
       background-color: blue;

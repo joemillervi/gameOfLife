@@ -143,7 +143,7 @@ function Engine() {
     var h = Math.floor(windowHeight / size);
     // Calculate the extra space
     var widthDiff = windowWidth % size;
-    var heightDiff = windowHeight % size;
+
     // Add the needed amount width to each cell to fill the window
     var widthSize = size + widthDiff / w;
 
@@ -168,12 +168,6 @@ function Engine() {
       gridSpace.appendChild(cellDiv)
     }
   }
-
-
-
-      // deal with the height difference
-      // titleSpace.style.height = windowHeight - (size * h) + 'px';
-
 
   /****** Update divs in DOM ******/
 
@@ -215,6 +209,22 @@ function Engine() {
   }
 
   /****** UI ******/
+  var uI = {};
+  var playBtn = document.getElementById('play');
+  playBtn.addEventListener('click', function(){
+    uI.play = true;
+  })
+
+  var pauseBtn = document.getElementById('pause');
+  pauseBtn.addEventListener('click', function() {
+    uI.play = false;
+  })
+
+  var fwdBtn = document.getElementById('fwd');
+  fwdBtn.addEventListener('click', function(){
+    updateCells();
+  })
+
 
 
   /****** Library ******/
@@ -252,7 +262,7 @@ function Engine() {
   randoArr = randomArr(10)
   printInitialGrid(10, randoArr)
   window.setInterval(function() {
-    keepItUp()
+    if(uI.play) keepItUp()
   }, 50  )
 
 
