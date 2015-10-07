@@ -138,7 +138,7 @@ function Engine() {
   // Create Div for each cell and append it to gridSpace
   function appendFirstDivs(arr, size) {
     var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
+    var windowHeight = window.innerHeight - 35;
     var w = Math.floor(windowWidth / size);
     var h = Math.floor(windowHeight / size);
     // Calculate the extra space
@@ -146,19 +146,21 @@ function Engine() {
     var heightDiff = windowHeight % size;
     // Add the needed amount width to each cell to fill the window
     var widthSize = size + widthDiff / w;
-    var heightSize = size + heightDiff /h;
+
     // Convert to percentage
     var widthPercent = widthSize / windowWidth * 100;
-    var heightPercent = heightSize / windowHeight * 100;
+
     // Begin to alter the DOM
     var gridSpace = document.getElementById('grid-space');
-    gridSpace.style.height = windowHeight + 'px';
+    // gridSpace.style.height = windowHeight + 'px';
     gridSpace.style.width = windowWidth + 'px';
-
+    // 
+    titleSpace = document.getElementById('title-space');
+    titleSpace.style.height = (windowHeight - (size * h)) + 35 + 'px'
     for(var i = 0; i < arr.length; i++) {
       var cellDiv = document.createElement('div');
       cellDiv.className = 'cellDiv';
-      cellDiv.style.height = heightPercent + '%'; 
+      cellDiv.style.height = size + 'px'; 
       cellDiv.style.width = widthPercent + '%'; 
       cellDiv.id = i;
       if(arr[i].life) cellDiv.style.background = cellDeadColor;
@@ -205,7 +207,7 @@ function Engine() {
   // Return [h, w] for the current window area
   function makeWH(size) {
     var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
+    var windowHeight = window.innerHeight - 35;
     // Calculate the number of cells we can fit in the width and height (there will be extra space)
     var w = Math.floor(windowWidth / size);
     var h = Math.floor(windowHeight / size);
