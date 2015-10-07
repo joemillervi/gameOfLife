@@ -2,19 +2,15 @@
 // This file provides functionality to render and update the grid, 
 // change the rules of the game, and set initial cells.
 
-
-var Engine = function(global) {
+function Engine() {
   // Accesses to global scope
-  var doc = global.document,
-      win = global.window;
+
   /****** Initial grid setup ******/
 
   // Create grid object
   var grid = {}
 
-  var sayHi = function(){ console.log('hi')}
-
-  // Function to make initial grid and set alive cells according to startingCellArr
+  // Make initial grid and set alive cells according to startingCellArr
   function makeCells(width, height, startingCellArr) {
     grid.width = width;
     grid.height = height;
@@ -25,7 +21,7 @@ var Engine = function(global) {
     return cellArr;
   }
 
-  // Constructor function that creates each cell object
+  // Create each cell object
   var Cell = function (x, y) {
     this.x = x;
     this.y = y;
@@ -61,31 +57,27 @@ var Engine = function(global) {
   }
 */
 
-  // Add property currentGrid to object grid and fill it
-  // grid.currentGrid = makeCells(2, 2, [{x : 0, y : 0}, {x: 0, y:1}, {x : 1, y : 0}], Cell);
-  //console.log(grid.currentGrid)
-
   /****** Updating the grid ******/
 
-  // Function that will update life status of each cell according to currentRule
+  // Update life status of each cell according to currentRule
   // of Cell.prototype.rules and return a new array of cells
   function updateCells() {
     var nextGrid = [];
-    grid.currentGrid.forEach(function(x) {
-      //console.log(x);
+    grid.currentGrid.forEach(function(x, i) {
       nextGrid.push(updateCell(x));
+      updateDiv.call(x, i); // Update class of the corresponding div
     });
     grid.currentGrid = nextGrid;
   }
 
-  // Function that returns a new, updated object literal that still inherits from Cell.prototype
+  // Take a cell object,
+  // Return a new, updated object that still inherits from Cell.prototype
   function updateCell(c) {
     var newObj = new Cell;
     var x = newObj.x = c.x;
     var y = newObj.y = c.y;
     newObj.life = c.life;
     var numAliveNeighbours = findAliveNeighbours(x, y);
-    //console.log('alive neighbours:', numAliveNeighbours)
     // Set life status according to Cell.prototype.rules current rules
     newObj.rules(numAliveNeighbours);
     return newObj;
@@ -99,8 +91,9 @@ var Engine = function(global) {
     if(n === 3) this.life = 1;
   }
 
-  // Function that will return the amount of alive neighbours for a given cell location 
-  // in grid.currentGrid
+
+
+  // Return the amount of alive neighbours for a given cell location in grid.currentGrid
   function findAliveNeighbours(x, y) {
     var counter = 0;
      for(var i = x-1; i < x + 2; i++) {
@@ -123,90 +116,84 @@ var Engine = function(global) {
     }
     return counter;
   }
-    // ALWAYS HAS TO BE SET TO CURRENT GRID.CURRENTGRID
-    //grid.currentGrid = updateCells(grid.currentGrid)
-    //console.log(grid.currentGrid)
-    //grid.currentGrid = updateCells(grid.currentGrid)
-    //console.log(grid.currentGrid)
  
-  /****** Writing to the DOM ******/
-
-  // Letting gridSpace by altered by everybody
+  /****** Create divs in DOM ******/
+  var cellDeadColor = 'black'
+  var cellAliveColor = 'red'
   var gridSpace = document.getElementById('grid-space')
+  var titleSpace = document.getElementById('title-space');
 
-  // Function that reads the window size and appends divs to fill it.
+  // Read the window size and append divs to fill it
   function printInitialGrid(size, startingCellArr) {
-    grid.currentGrid = makeHWOnce(size)(startingCellArr)
-    console.log(grid.currentGrid)
+    grid.currentGrid = setMakeCells(size)(startingCellArr)
     appendFirstDivs(grid.currentGrid, size)
   }
 
-  // Function that displays the cells in the grid.currentGrid to the DOM
+  // Read the window size and return makeCells bound with h and w supplied.
+  function setMakeCells(size) {
+    var wH = makeWH(size)
+    return makeCells.bind(this, wH[0], wH[1])
+  }
+
+  // Create Div for each cell and append it to gridSpace
   function appendFirstDivs(arr, size) {
     var windowWidth = window.innerWidth;
     var windowHeight = window.innerHeight;
-    console.log(windowWidth)
+    var w = Math.floor(windowWidth / size);
+    var h = Math.floor(windowHeight / size);
     // Calculate the extra space
     var widthDiff = windowWidth % size;
     var heightDiff = windowHeight % size;
-    // Add the needed amount of height and width to each cell to fill the window
+    // Add the needed amount width to each cell to fill the window
     var widthSize = size + widthDiff / w;
-    var heightSize = size + heightDiff / h;
-    // Add each cell to the DOM
+    var heightSize = size + heightDiff /h;
+    // Convert to percentage
+    var widthPercent = widthSize / windowWidth * 100;
+    var heightPercent = heightSize / windowHeight * 100;
+    // Begin to alter the DOM
+    var gridSpace = document.getElementById('grid-space');
+    gridSpace.style.height = windowHeight + 'px';
+    gridSpace.style.width = windowWidth + 'px';
+
     for(var i = 0; i < arr.length; i++) {
       var cellDiv = document.createElement('div');
-      cellDiv.className = 'cellDiv'
-      cellDiv.style.height = heightSize + 'px'; 
-      cellDiv.style.width = widthSize + 'px'; 
-      gridSpace.appendChild(cellDiv);
+      cellDiv.className = 'cellDiv';
+      cellDiv.style.height = heightPercent + '%'; 
+      cellDiv.style.width = widthPercent + '%'; 
       cellDiv.id = i;
-      if(arr[i].life) cellDiv.style.background = 'black';
-      else cellDiv.style.background = 'red';
+      if(arr[i].life) cellDiv.style.background = cellDeadColor;
+      else cellDiv.style.background = cellAliveColor;
+      gridSpace.appendChild(cellDiv)
     }
   }
 
-  // Function that reads the window size and returns makeCells bound with h and w supplied.
-  function makeHWOnce(size) {
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-    // Calculate the number of cells we can fit in the width and height (there will be extra space)
-    w = Math.floor(windowWidth / size);
-    h = Math.floor(windowHeight / size);
-    return makeCells.bind(this, w, h)
-  }
 
-  // Function that updates the divs in gridSpace according to grid.currentGrid
-  function updateDivs() {
-    var arr = grid.currentGrid 
-    for(var i = 0; i < arr.length; i++) {
-      var thisCell = document.getElementById(i)
-      if(arr[i].life) {
-        thisCell.style.background = 'black';
-      }
-      else thisCell.style.background = 'red'
+
+      // deal with the height difference
+      // titleSpace.style.height = windowHeight - (size * h) + 'px';
+
+
+  /****** Update divs in DOM ******/
+
+  // Update a specific Div (this)
+  // This function is called in updateCells, right after cell data is updated
+  function updateDiv(i) {
+    var currentCell = document.getElementById(i);
+    if(this.life) {
+      currentCell.style.background = cellAliveColor;
+    }
+    else {
+      currentCell.style.background = cellDeadColor;
     }
   }
+  
+  /****** Utilities ******/
 
-  randoArr = randomArr(10)
-  printInitialGrid(10, randoArr)
-
-  function keepItUp() {
-    updateCells()
-    setTimeout(updateDivs(), 2000)
-  }
-
-  window.setInterval(function() {
-    keepItUp()
-  }, 50  )
-
-
-  /****** Utilties ******/
-
-  // Function that returns random initial array for a given window size
+  // Return random initial array for a given window size
   function randomArr(size) {
     returnArr = [];
     var wH = makeWH(size)
-    console.log(wH)
+    //console.log(wH)
     traverseGrid(wH[0], wH[1], function(x, y){
       if(Math.random() < .5) {
         returnArr.push({'x': x, 'y': y})
@@ -215,9 +202,22 @@ var Engine = function(global) {
     return returnArr;
   }
 
+  // Return [h, w] for the current window area
+  function makeWH(size) {
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+    // Calculate the number of cells we can fit in the width and height (there will be extra space)
+    var w = Math.floor(windowWidth / size);
+    var h = Math.floor(windowHeight / size);
+    return [w, h];
+  }
+
+  /****** UI ******/
+
+
   /****** Library ******/
 
-  // Function that takes a callback and passes x and y to it for a given grid
+  // Take a callback and pass x and y to it for a given grid
   function traverseGrid(height, width, fn) {
     for(var y = 0; y < width; y++) {
       for(var x = 0; x < height; x++) {
@@ -226,22 +226,33 @@ var Engine = function(global) {
     }  
   }
 
-  // Function that clears a div (used to clear grid)
+  // Clear a div (used to clear grid)
   function clearElement(e) {
     if(e !== null) {
       e.innerHTML = ''
     }
   }
 
-  // Function that returns [h, w] for the current window area
-  function makeWH(size) {
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-    // Calculate the number of cells we can fit in the width and height (there will be extra space)
-    w = Math.floor(windowWidth / size);
-    h = Math.floor(windowHeight / size);
-    return [w, h];
+  // Allow for the modification of functions.
+  function wrap(fn, callback) {
+    return function() {  
+      args = Array.prototype.slice.call(arguments);
+      args.unshift(fn);
+      return callback(args);
+    }
   }
 
 
+/****** Turn it on ******/
+  function keepItUp() {
+    setTimeout(updateCells(), 2000)
+  }
+  randoArr = randomArr(10)
+  printInitialGrid(10, randoArr)
+  window.setInterval(function() {
+    keepItUp()
+  }, 50  )
+
+
 }
+
