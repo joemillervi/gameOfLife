@@ -18,7 +18,10 @@ function Engine() {
     traverseGrid(grid.width, grid.height, function(x, y) {
       cellArr.push(new Cell(x, y).setLifeStatus(startingCellArr))
     })
+    // Update or create cache (for reverse functionality)
+    
     return cellArr;
+
   }
 
   // Create each cell object
@@ -60,14 +63,19 @@ function Engine() {
   /****** Updating the grid ******/
 
   // Update life status of each cell according to currentRule
-  // of Cell.prototype.rules and return a new array of cells
+  // of Cell.prototype.rules and return a new array of cells. 
+  // Prints to DOM after updating
+  // Updates cache
   function updateCells() {
     var nextGrid = [];
     grid.currentGrid.forEach(function(x, i) {
       nextGrid.push(updateCell(x));
-      updateDiv.call(x, i); // Update class of the corresponding div
+      var justUpdated
+      updateDiv.call(updateCell(x), i); 
     });
     grid.currentGrid = nextGrid;
+    grid.cache.push(grid.currentGrid)
+    console.log('secondCache', grid.cache, grid.cache.length)
   }
 
   // Take a cell object,
@@ -126,7 +134,11 @@ function Engine() {
   // Read the window size and append divs to fill it
   function printInitialGrid(size, startingCellArr) {
     grid.currentGrid = setMakeCells(size)(startingCellArr)
+    console.log('first grid', grid.currentGrid)
     appendFirstDivs(grid.currentGrid, size)
+    grid.cache ? grid.cache.push(grid.currentGrid) : grid.cache = [grid.currentGrid];
+    console.log('first cache', grid.cache)
+    updateDivs(grid.currentGrid)
   }
 
   // Read the window size and return makeCells bound with h and w supplied.
@@ -163,8 +175,8 @@ function Engine() {
       cellDiv.style.height = size + 'px'; 
       cellDiv.style.width = widthPercent + '%'; 
       cellDiv.id = i;
-      if(arr[i].life) cellDiv.style.background = cellDeadColor;
-      else cellDiv.style.background = cellAliveColor;
+      // if(arr[i].life) cellDiv.style.background = cellAliveColor;
+      // else cellDiv.style.background = cellDeadColor;
       gridSpace.appendChild(cellDiv)
     }
   }
@@ -183,6 +195,14 @@ function Engine() {
     }
   }
   
+  // Update all divs given a array of cell objects (Used in stepBack)
+  // does NOT update the grid or cells
+  function updateDivs(arr) {
+    arr.forEach(function(x, i) {
+      updateDiv.call(x, i)
+    })
+  }
+
   /****** Utilities ******/
 
   // Return random initial array for a given window size
@@ -208,8 +228,22 @@ function Engine() {
     return [w, h];
   }
 
+  // Use grid.cache to update the divs backwards one step. Also updates state of
+  // grid.currentGrid
+  function stepBack() {
+    if(grid.cache.length === 1) {
+      grid.currentGrid = grid.cache[0]
+    }
+    else {
+      grid.cache.pop()
+      grid.currentGrid = grid.cache[grid.cache.length - 1]
+    }
+    updateDivs(grid.currentGrid)
+  }
+
   /****** UI ******/
   var uI = {};
+  uI.play = false;
   var playBtn = document.getElementById('play');
   playBtn.addEventListener('click', function(){
     uI.play = true;
@@ -223,7 +257,14 @@ function Engine() {
   var fwdBtn = document.getElementById('fwd');
   fwdBtn.addEventListener('click', function(){
     updateCells();
+    console.log('called updateCells')
   })
+
+  var stepBackBtn = document.getElementById('step-back');
+  stepBackBtn.addEventListener('click', function() {
+      stepBack()
+  })
+  
 
 
 
@@ -259,7 +300,7 @@ function Engine() {
   function keepItUp() {
     setTimeout(updateCells(), 2000)
   }
-  randoArr = randomArr(10)
+  var randoArr = randomArr(10)
   printInitialGrid(10, randoArr)
   window.setInterval(function() {
     if(uI.play) keepItUp()
