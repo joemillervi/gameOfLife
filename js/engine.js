@@ -164,9 +164,7 @@ function Engine() {
 
     // Begin to alter the DOM
     var gridSpace = document.getElementById('grid-space');
-    // gridSpace.style.height = windowHeight + 'px';
     gridSpace.style.width = windowWidth + 'px';
-    // 
     titleSpace = document.getElementById('title-space');
     titleSpace.style.height = (windowHeight - (size * h)) + 35 + 'px'
     for(var i = 0; i < arr.length; i++) {
@@ -175,9 +173,32 @@ function Engine() {
       cellDiv.style.height = size + 'px'; 
       cellDiv.style.width = widthPercent + '%'; 
       cellDiv.id = i;
-      // if(arr[i].life) cellDiv.style.background = cellAliveColor;
-      // else cellDiv.style.background = cellDeadColor;
-      gridSpace.appendChild(cellDiv)
+      // Add the event listener to allow user to change life by click and drag
+      (function(i) {
+        cellDiv.addEventListener('mouseover', function() {
+          var mousedOverDiv = document.getElementById(i)
+          console.log('fired', i)
+          if(uI.mouseDown) {
+            console.log('clicked')
+            mousedOverDiv.style.background = cellAliveColor
+            grid.currentGrid[i].life = 1;
+            grid.cache[grid.cache.length - 1] = grid.currentGrid;
+          }
+        })
+        cellDiv.addEventListener('click', function() {
+          var mousedOverDiv = document.getElementById(i)
+          if(grid.currentGrid[i].life) {
+            mousedOverDiv.style.background = cellDeadColor;
+            grid.currentGrid[i].life = 0;
+          }
+          else {
+            mousedOverDiv.style.background = cellAliveColor;
+            grid.currentGrid[i].life = 1;
+          }  
+           grid.cache[grid.cache.length - 1] = grid.currentGrid;
+        })
+        gridSpace.appendChild(cellDiv)
+      }(i))
     }
   }
 
@@ -243,29 +264,42 @@ function Engine() {
 
   /****** UI ******/
   var uI = {};
+  // Checks to see if play button was clicked
   uI.play = false;
   var playBtn = document.getElementById('play');
   playBtn.addEventListener('click', function(){
     uI.play = true;
   })
 
+  // Alters status of uI.play if paused is clicked
   var pauseBtn = document.getElementById('pause');
   pauseBtn.addEventListener('click', function() {
     uI.play = false;
   })
 
+  // Calls updateCells once
   var fwdBtn = document.getElementById('fwd');
   fwdBtn.addEventListener('click', function(){
     updateCells();
     console.log('called updateCells')
   })
 
+  // Sets grid.currentGrid back one grid step, and updates DOM
   var stepBackBtn = document.getElementById('step-back');
   stepBackBtn.addEventListener('click', function() {
       stepBack()
   })
-  
 
+  // Check if mouse is held down
+  uI.mouseDown = 0;  
+  document.body.onmousedown = function() {
+    uI.mouseDown = 1;
+    console.log('down')
+  }
+  document.body.onmouseup = function() {
+    uI.mouseDown = 0;
+    console.log('up')
+  }
 
 
   /****** Library ******/
