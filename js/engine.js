@@ -1,14 +1,14 @@
-// Engine.js
-// This file provides functionality to render and update the grid, 
-// change the rules of the game, and set initial cells.
+/**
+* Engine.js
+* This file provides functionality to render and update the grid,
+*/
 
-function Engine() {
-  // Accesses to global scope
+var Engine = (function(global) {
 
   /****** Initial grid setup ******/
 
   // Create grid object
-  var grid = {}
+  var grid = {};
 
   // Make initial grid and set alive cells according to startingCellArr
   function makeCells(width, height, startingCellArr) {
@@ -16,12 +16,10 @@ function Engine() {
     grid.height = height;
     var cellArr = [];
     traverseGrid(grid.width, grid.height, function(x, y) {
-      cellArr.push(new Cell(x, y).setLifeStatus(startingCellArr))
-    })
+      cellArr.push(new Cell(x, y).setLifeStatus(startingCellArr));
+    });
     // Update or create cache (for reverse functionality)
-    
     return cellArr;
-
   }
 
   // Create each cell object
@@ -45,27 +43,13 @@ function Engine() {
     return this;
   }
 
-/*
-  Cell.prototype.setLifeStatus = function(arr) {
-    var that = this
-    arr.forEach(function(q) {
-      if(q.x === that.x && q.y === that.y) {
-        that.life = 1;
-      }
-      else {
-        that.life = 0;
-      }
-    })
-    return that;
-  }
-*/
-
   /****** Updating the grid ******/
-
-  // Update life status of each cell according to currentRule
-  // of Cell.prototype.rules and return a new array of cells. 
-  // Prints to DOM after updating
-  // Updates cache
+ 
+  /**
+  * Update life status of each cell according to currentRule
+  * of Cell.prototype.rules and return a new array of cells. 
+  * Prints to DOM after updating and Updates cache
+  */
   function updateCells() {
     var nextGrid = [];
     grid.currentGrid.forEach(function(x, i) {
@@ -74,8 +58,7 @@ function Engine() {
       updateDiv.call(updateCell(x), i); 
     });
     grid.currentGrid = nextGrid;
-    grid.cache.push(grid.currentGrid)
-    console.log('secondCache', grid.cache, grid.cache.length)
+    grid.cache.push(grid.currentGrid)  
   }
 
   // Take a cell object,
@@ -99,8 +82,6 @@ function Engine() {
     if(n === 3) this.life = 1;
   }
 
-
-
   // Return the amount of alive neighbours for a given cell location in grid.currentGrid
   function findAliveNeighbours(x, y) {
     var counter = 0;
@@ -108,12 +89,10 @@ function Engine() {
       for(var j = y - 1; j < y + 2; j++) {
        //console.log(i,j)
         if(i === x && j === y) {
-          //console.log('found self', i, j)
           continue;
         }
         // Checks to see if cell is off grid
         if(i > grid.width - 1 || j > grid.height - 1 || i < 0 || j < 0) {
-          //console.log('off grid', i, j)
           continue;
         }
         if(grid.currentGrid[i + grid.width * j].life) {
@@ -134,7 +113,6 @@ function Engine() {
   // Read the window size and append divs to fill it
   function printInitialGrid(size, startingCellArr) {
     grid.currentGrid = setMakeCells(size)(startingCellArr)
-    console.log('first grid', grid.currentGrid)
     appendFirstDivs(grid.currentGrid, size)
     grid.cache ? grid.cache.push(grid.currentGrid) : grid.cache = [grid.currentGrid];
     console.log('first cache', grid.cache)
@@ -155,13 +133,10 @@ function Engine() {
     var h = Math.floor(windowHeight / size);
     // Calculate the extra space
     var widthDiff = windowWidth % size;
-
     // Add the needed amount width to each cell to fill the window
     var widthSize = size + widthDiff / w;
-
     // Convert to percentage
     var widthPercent = widthSize / windowWidth * 100;
-
     // Begin to alter the DOM
     var gridSpace = document.getElementById('grid-space');
     gridSpace.style.width = windowWidth + 'px';
@@ -175,24 +150,24 @@ function Engine() {
       cellDiv.id = i;
       // Add the event listener to allow user to change life by click and drag
       (function(i) {
-        cellDiv.addEventListener('mouseover', function() {
-          var mousedOverDiv = document.getElementById(i)
-          console.log('fired', i)
+        cellDiv.addEventListener('mouseover', function() { 
           if(uI.mouseDown) {
+            var mousedOverDiv = document.getElementById(i)
             console.log('clicked')
             mousedOverDiv.style.background = cellAliveColor
             grid.currentGrid[i].life = 1;
+            console.log(grid.currentGrid)
             grid.cache[grid.cache.length - 1] = grid.currentGrid;
-          }
+          }     
         })
-        cellDiv.addEventListener('click', function() {
-          var mousedOverDiv = document.getElementById(i)
+        cellDiv.addEventListener('mousedown', function() {
+          var clickedDiv = document.getElementById(i)
           if(grid.currentGrid[i].life) {
-            mousedOverDiv.style.background = cellDeadColor;
+            clickedDiv.style.background = cellDeadColor;
             grid.currentGrid[i].life = 0;
           }
           else {
-            mousedOverDiv.style.background = cellAliveColor;
+            clickedDiv.style.background = cellAliveColor;
             grid.currentGrid[i].life = 1;
           }  
            grid.cache[grid.cache.length - 1] = grid.currentGrid;
@@ -263,7 +238,7 @@ function Engine() {
   }
 
   /****** UI ******/
-  var uI = {};
+  uI = {};
   // Checks to see if play button was clicked
   uI.play = false;
   var playBtn = document.getElementById('play');
@@ -301,7 +276,6 @@ function Engine() {
     console.log('up')
   }
 
-
   /****** Library ******/
 
   // Take a callback and pass x and y to it for a given grid
@@ -328,18 +302,13 @@ function Engine() {
       return callback(args);
     }
   }
-
-
-/****** Turn it on ******/
-  function keepItUp() {
-    setTimeout(updateCells(), 2000)
+  
+  // Public functions for app.js
+  return {
+    printInitialGrid: printInitialGrid,
+    randomArr: randomArr,
+    updateCells: updateCells, 
+    uI: uI
   }
-  var randoArr = randomArr(10)
-  printInitialGrid(10, randoArr)
-  window.setInterval(function() {
-    if(uI.play) keepItUp()
-  }, 50  )
-
-
-}
-
+  
+})(this)
