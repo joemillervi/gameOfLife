@@ -1,0 +1,64 @@
+body {
+  background-color: blue;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+@font-face {
+  font-family: arkhip;
+  src: url(PrimeLight.otf);
+  font-weight:;
+}
+
+#wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.cellDiv {
+  float:left;
+  border-style:;
+  transition: .3s;
+}
+
+#title-space {
+  text-align: center;
+  font-size: 1.7em;
+  color: black;
+  position:relative;
+  font-family: arkhip;
+}
+
+#title {
+  position: relative;
+  display: inline-block;
+}
+
+#controls {
+  position: relative;
+  display: inline-block;
+  top:.2em;
+}
+
+#menu-icon {
+position: absolute;
+margin-left: 1em;
+margin-top: .2em;
+z-index:1;
+}
+
+#menu-bar {
+  position:absolute;
+  height:500px;
+  width:200px;
+  background-color: green;
+  display: none;
+  transition:1s;
+}
+
+h4 {
+  margin:0; 
+  padding:0;
+}

@@ -58,7 +58,8 @@ var Engine = (function(global) {
       updateDiv.call(updateCell(x), i); 
     });
     grid.currentGrid = nextGrid;
-    grid.cache.push(grid.currentGrid)  
+    grid.cache.push(grid.currentGrid)
+
   }
 
   // Take a cell object,
@@ -105,8 +106,6 @@ var Engine = (function(global) {
   }
  
   /****** Create divs in DOM ******/
-  var cellDeadColor = 'black'
-  var cellAliveColor = 'red'
   var gridSpace = document.getElementById('grid-space')
   var titleSpace = document.getElementById('title-space');
 
@@ -154,23 +153,25 @@ var Engine = (function(global) {
           if(uI.mouseDown) {
             var mousedOverDiv = document.getElementById(i)
             console.log('clicked')
-            mousedOverDiv.style.background = cellAliveColor
+            mousedOverDiv.style.background = uI.cellAliveColor
             grid.currentGrid[i].life = 1;
             console.log(grid.currentGrid)
             grid.cache[grid.cache.length - 1] = grid.currentGrid;
+            console.log(JSON.stringify(grid.currentGrid))
           }     
         })
         cellDiv.addEventListener('mousedown', function() {
           var clickedDiv = document.getElementById(i)
           if(grid.currentGrid[i].life) {
-            clickedDiv.style.background = cellDeadColor;
+            clickedDiv.style.background = uI.cellDeadColor;
             grid.currentGrid[i].life = 0;
           }
           else {
-            clickedDiv.style.background = cellAliveColor;
+            clickedDiv.style.background = uI.cellAliveColor;
             grid.currentGrid[i].life = 1;
           }  
            grid.cache[grid.cache.length - 1] = grid.currentGrid;
+           console.log(JSON.stringify(grid.currentGrid))
         })
         gridSpace.appendChild(cellDiv)
       }(i))
@@ -184,10 +185,10 @@ var Engine = (function(global) {
   function updateDiv(i) {
     var currentCell = document.getElementById(i);
     if(this.life) {
-      currentCell.style.background = cellAliveColor;
+      currentCell.style.background = uI.cellAliveColor;
     }
     else {
-      currentCell.style.background = cellDeadColor;
+      currentCell.style.background = uI.cellDeadColor;
     }
   }
   
@@ -274,6 +275,55 @@ var Engine = (function(global) {
   document.body.onmouseup = function() {
     uI.mouseDown = 0;
     console.log('up')
+  }
+
+  // Menu bar
+  var menuBar = document.getElementById('menu-bar');
+  var menuIcon = document.getElementById('menu-icon');
+
+  // Ability to toggle menu bar
+  menuIcon.addEventListener('click', function() {
+    toggleMenuBar()
+  })
+
+  var toggleMenuBar = (function() {
+    var menuBarStatus = false;
+    return function() {
+      if(menuBarStatus) {
+        menuBarStatus = false;
+        menuBar.style.display = "none";
+      }
+      else {
+        menuBarStatus = true;
+        menuBar.style.display = "inline";
+      }
+    }
+  })()
+
+ // Ability to change colors
+  uI.cellDeadColor = 'black';
+  uI.cellAliveColor = 'red';
+
+  uI.updateColor = function(x) {
+    if(x === 'cellAliveColor') {
+      var text = document.getElementById('alive-color-input').value;
+    }
+    else {
+      var text = document.getElementById('dead-color-input').value;
+    }
+    console.log(text)
+    uI[x] = text;
+    updateDivs(grid.currentGrid)
+  }
+
+  // Ability to change fade
+  uI.updateFadeout = function() {
+    var allCells = document.getElementsByClassName('cellDiv');
+    allCells = Array.prototype.slice.call(allCells);
+    var fadeAmount = document.getElementById('fade').value;
+    allCells.forEach(function(x) {
+      x.style.transition = fadeAmount + 's';
+    })
   }
 
   /****** Library ******/
