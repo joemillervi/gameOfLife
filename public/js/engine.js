@@ -7,10 +7,12 @@ var Engine = (function(global) {
 
   /****** Initial grid setup ******/
 
-  // Create grid object
+  // Create grid object that will make avaliable: currentGrid, cache, width and height
   var grid = {};
 
   // Make initial grid and set alive cells according to startingCellArr
+  // width, height are the number of cells in each row
+  // startingCellArr is an array of cells that will be initially set to alive
   function makeCells(width, height, startingCellArr) {
     grid.width = width;
     grid.height = height;
@@ -54,7 +56,6 @@ var Engine = (function(global) {
     var nextGrid = [];
     grid.currentGrid.forEach(function(x, i) {
       nextGrid.push(updateCell(x));
-      var justUpdated
       updateDiv.call(updateCell(x), i); 
     });
     grid.currentGrid = nextGrid;
@@ -111,9 +112,13 @@ var Engine = (function(global) {
 
   // Read the window size and append divs to fill it
   function printInitialGrid(size, startingCellArr) {
+    console.log('-----------')
+    gridSpace.innerHTML = '';
     grid.currentGrid = setMakeCells(size)(startingCellArr)
+    //console.log(grid.currentGrid)
     appendFirstDivs(grid.currentGrid, size)
-    grid.cache ? grid.cache.push(grid.currentGrid) : grid.cache = [grid.currentGrid];
+    console.log('size',size)
+    grid.cache = [grid.currentGrid];
     console.log('first cache', grid.cache)
     updateDivs(grid.currentGrid)
   }
@@ -126,21 +131,27 @@ var Engine = (function(global) {
 
   // Create Div for each cell and append it to gridSpace
   function appendFirstDivs(arr, size) {
+    size = parseInt(size)
     var windowWidth = window.innerWidth;
     var windowHeight = window.innerHeight - 35;
     var w = Math.floor(windowWidth / size);
     var h = Math.floor(windowHeight / size);
+    console.log('windowWidth ' + windowWidth, 'widnwoHeight '+windowHeight)
     // Calculate the extra space
     var widthDiff = windowWidth % size;
+    console.log('widthDiff ', widthDiff)
     // Add the needed amount width to each cell to fill the window
-    var widthSize = size + widthDiff / w;
+
+    console.log('widthSize '+widthSize, typeof size, typeof widthDiff, typeof w)
+    var widthSize = (size + widthDiff / w); // BUG HERE: the mat is wrong the second time
+    console.log('widthSize '+widthSize, 'size ' +size, 'widthDiff ' + widthDiff, 'w '+w)
     // Convert to percentage
     var widthPercent = widthSize / windowWidth * 100;
     // Begin to alter the DOM
-    var gridSpace = document.getElementById('grid-space');
     gridSpace.style.width = windowWidth + 'px';
-    titleSpace = document.getElementById('title-space');
+    // Add excess height to title
     titleSpace.style.height = (windowHeight - (size * h)) + 35 + 'px'
+    console.log('width%' +widthPercent)
     for(var i = 0; i < arr.length; i++) {
       var cellDiv = document.createElement('div');
       cellDiv.className = 'cellDiv';
@@ -157,7 +168,7 @@ var Engine = (function(global) {
             grid.currentGrid[i].life = 1;
             console.log(grid.currentGrid)
             grid.cache[grid.cache.length - 1] = grid.currentGrid;
-            console.log(JSON.stringify(grid.currentGrid))
+            //console.log(JSON.stringify(grid.currentGrid))
           }     
         })
         cellDiv.addEventListener('mousedown', function() {
@@ -171,7 +182,7 @@ var Engine = (function(global) {
             grid.currentGrid[i].life = 1;
           }  
            grid.cache[grid.cache.length - 1] = grid.currentGrid;
-           console.log(JSON.stringify(grid.currentGrid))
+           //console.log(JSON.stringify(grid.currentGrid))
         })
         gridSpace.appendChild(cellDiv)
       }(i))
@@ -222,6 +233,7 @@ var Engine = (function(global) {
     // Calculate the number of cells we can fit in the width and height (there will be extra space)
     var w = Math.floor(windowWidth / size);
     var h = Math.floor(windowHeight / size);
+    console.log('w' + w, 'h' + h)
     return [w, h];
   }
 
@@ -270,11 +282,9 @@ var Engine = (function(global) {
   uI.mouseDown = 0;  
   document.body.onmousedown = function() {
     uI.mouseDown = 1;
-    console.log('down')
   }
   document.body.onmouseup = function() {
     uI.mouseDown = 0;
-    console.log('up')
   }
 
   // Menu bar
@@ -326,6 +336,13 @@ var Engine = (function(global) {
     })
   }
 
+  // Change cell size and reprint grid BUG HERE
+  uI.changeSize = function() {
+    var size = document.getElementById('size').value;
+    console.log(size);
+
+    printInitialGrid(size, []);
+  }
   /****** Library ******/
 
   // Take a callback and pass x and y to it for a given grid

@@ -20,7 +20,7 @@ body {
 .cellDiv {
   float:left;
   border-style:;
-  transition: .3s;
+ /* transition: .3s; */
 }
 
 #title-space {
