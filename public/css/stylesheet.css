@@ -89,12 +89,12 @@ input {
 #menu-bar {
   position:absolute;
   height:77%;
-  width:220px;
+  width:250px;
   background-color: #16161B;
   color: white;
   font-family: moonBold;
-  //left: -200px;
-  padding: 1em;
+  left: -296px;
+  padding: 23px;
   text-align: ;
 }
 
@@ -110,7 +110,7 @@ input {
         animation-timing-function: ease-out;
     }
     100% {
-        transform: translate3d(200px, 0px, 0px);
+        transform: translate3d(296px, 0px, 0px);
     }
 }
 
@@ -120,7 +120,7 @@ input {
 }
 @keyframes slideLeft {
     0% {
-        transform: translate3d(200px, 0px, 0px);
+        transform: translate3d(296px, 0px, 0px);
         animation-timing-function: ease-out;
     }
     100% {
@@ -132,18 +132,33 @@ input {
   width:116px;
   height:116px;
   background-color: white;
-  background-image: url('../images/glider.png')
+  transform: rotate(180deg);
+  display: inline-block;
+  background-image: url('../images/glider.png');
 }
+
+#explination {
+  height:116px;
+  width: 130px;
+  background-color: ;
+  float:right;
+  display:inline-block;
+  font-family: monospace;
+}
+
 
 .small-text {
   font-family: moon;
-  color:#DADADA
-;
+  color:#DADADA;
 }
 
 h4 {
   margin:0; 
   padding:0;
+}
+
+.inline {
+  display: inline;
 }
 
 #right {

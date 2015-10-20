@@ -403,9 +403,17 @@ var Engine = (function(global) {
 
   // --- Components for the drag and drop system
 
+  // array of all the patterns
+  var patternArr = [[{x:0, y:0}, {x:0, y:1}, {x:1, y:0}, {x: -1, y:1},{x: -1, y: -1} ],
+  [{"x":0,"y":-1},{"x":1,"y":-1},{"x":-1,"y":0},{"x":0,"y":0},{"x":0,"y":1}],
+  [{"x":-2,"y":-2},{"x":1,"y":-2},{"x":2,"y":-1},{"x":-2,"y":0},{"x":2,"y":0},{"x":-1,"y":1},{"x":0,"y":1},{"x":1,"y":1},{"x":2,"y":1}],
+  [{"x":-2,"y":-1},{"x":3,"y":-1},{"x":-4,"y":0},{"x":-3,"y":0},{"x":-1,"y":0},{"x":0,"y":0},{"x":1,"y":0},{"x":2,"y":0},{"x":4,"y":0},{"x":5,"y":0},{"x":-2,"y":1},{"x":3,"y":1}],
+  [{"x":-2,"y":-1},{"x":0,"y":0},{"x":-3,"y":1},{"x":-2,"y":1},{"x":1,"y":1},{"x":2,"y":1},{"x":3,"y":1}],
+  [{"x":9,"y":-6},{"x":7,"y":-5},{"x":9,"y":-5},{"x":-3,"y":-4},{"x":-2,"y":-4},{"x":5,"y":-4},{"x":6,"y":-4},{"x":19,"y":-4},{"x":20,"y":-4},{"x":-4,"y":-3},{"x":0,"y":-3},{"x":5,"y":-3},{"x":6,"y":-3},{"x":19,"y":-3},{"x":20,"y":-3},{"x":-15,"y":-2},{"x":-14,"y":-2},{"x":-5,"y":-2},{"x":1,"y":-2},{"x":5,"y":-2},{"x":6,"y":-2},{"x":-15,"y":-1},{"x":-14,"y":-1},{"x":-5,"y":-1},{"x":-1,"y":-1},{"x":1,"y":-1},{"x":2,"y":-1},{"x":7,"y":-1},{"x":9,"y":-1},{"x":-5,"y":0},{"x":1,"y":0},{"x":9,"y":0},{"x":-4,"y":1},{"x":0,"y":1},{"x":-3,"y":2},{"x":-2,"y":2}]
+  ]
   
-  var patternArr = [[{x:0, y:0}, {x:0, y:1}, {x:1, y:0}, {x: -1, y:1},{x: -1, y: -1} ],[],[]]
-  
+  // arr of 
+
   // pattern count toggle 0 - 5 for pattern items, includes target box
   uI.patternCount = 0;
 
@@ -424,7 +432,7 @@ var Engine = (function(global) {
 
   var targetBox = document.getElementById('target-box');
   targetBox.addEventListener('click', function() {
-
+    logGrid()
     uI.targetBoxToggle();
         console.log('targetBox: ', uI.targetBox)
   })
@@ -512,6 +520,19 @@ var Engine = (function(global) {
       args.unshift(fn);
       return callback(args);
     }
+  }
+
+  // take grid and log JSON file of alive cells (used for making patterns)
+  function logGrid() {
+    var returnArr = [];
+    var tempGrid = clone(grid.currentGrid)
+    tempGrid.forEach(function(c) {
+      if(c.life) {
+        newObj = {x: c.x - 16, y: c.y - 5}
+        returnArr.push(newObj)
+      }
+    })
+    console.log(JSON.stringify(returnArr))
   }
   
   /****** Public Objects ******/

@@ -6,7 +6,7 @@
 // Turn it on
 var randoArr = Engine.randomArr(Engine.uI.size);
 
-Engine.printInitialGrid(Engine.uI.size, randoArr);
+Engine.printInitialGrid(Engine.uI.size, []);
 
 // This is the loop
 (function playing() {
