@@ -60,6 +60,15 @@ button {
   padding:;
   font-size:1em;
 }
+
+#rotate {
+  font-size: .8em;
+  padding:2px 4px 2px 5px;
+  position: relative;
+  left:4px;
+
+}
+
 input:focus, textarea:focus {
   outline:none;
      border: solid 1px #707070;
@@ -132,7 +141,7 @@ input {
   width:116px;
   height:116px;
   background-color: white;
-  transform: rotate(180deg);
+
   display: inline-block;
   background-image: url('../images/glider.png');
 }

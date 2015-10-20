@@ -403,22 +403,76 @@ var Engine = (function(global) {
 
   // --- Components for the drag and drop system
 
-  // array of all the patterns
-  var patternArr = [[{x:0, y:0}, {x:0, y:1}, {x:1, y:0}, {x: -1, y:1},{x: -1, y: -1} ],
-  [{"x":0,"y":-1},{"x":1,"y":-1},{"x":-1,"y":0},{"x":0,"y":0},{"x":0,"y":1}],
-  [{"x":-2,"y":-2},{"x":1,"y":-2},{"x":2,"y":-1},{"x":-2,"y":0},{"x":2,"y":0},{"x":-1,"y":1},{"x":0,"y":1},{"x":1,"y":1},{"x":2,"y":1}],
-  [{"x":-2,"y":-1},{"x":3,"y":-1},{"x":-4,"y":0},{"x":-3,"y":0},{"x":-1,"y":0},{"x":0,"y":0},{"x":1,"y":0},{"x":2,"y":0},{"x":4,"y":0},{"x":5,"y":0},{"x":-2,"y":1},{"x":3,"y":1}],
-  [{"x":-2,"y":-1},{"x":0,"y":0},{"x":-3,"y":1},{"x":-2,"y":1},{"x":1,"y":1},{"x":2,"y":1},{"x":3,"y":1}],
-  [{"x":9,"y":-6},{"x":7,"y":-5},{"x":9,"y":-5},{"x":-3,"y":-4},{"x":-2,"y":-4},{"x":5,"y":-4},{"x":6,"y":-4},{"x":19,"y":-4},{"x":20,"y":-4},{"x":-4,"y":-3},{"x":0,"y":-3},{"x":5,"y":-3},{"x":6,"y":-3},{"x":19,"y":-3},{"x":20,"y":-3},{"x":-15,"y":-2},{"x":-14,"y":-2},{"x":-5,"y":-2},{"x":1,"y":-2},{"x":5,"y":-2},{"x":6,"y":-2},{"x":-15,"y":-1},{"x":-14,"y":-1},{"x":-5,"y":-1},{"x":-1,"y":-1},{"x":1,"y":-1},{"x":2,"y":-1},{"x":7,"y":-1},{"x":9,"y":-1},{"x":-5,"y":0},{"x":1,"y":0},{"x":9,"y":0},{"x":-4,"y":1},{"x":0,"y":1},{"x":-3,"y":2},{"x":-2,"y":2}]
-  ]
+  /**
+  * All of the patterns
+  *
+  * [{x:0, y:0}, {x:0, y:1}, {x:1, y:0}, {x: -1, y:1},{x: -1, y: -1} ], // Glider
+  * [{"x":-2,"y":-2},{"x":1,"y":-2},{"x":2,"y":-1},{"x":-2,"y":0},{"x":2,"y":0},{"x":-1,"y":1},{"x":0,"y":1},{"x":1,"y":1},{"x":2,"y":1}], // LWSS
+  * [{"x":0,"y":-3},{"x":-2,"y":-2},{"x":0,"y":-2},{"x":-1,"y":-1},{"x":1,"y":-1},{"x":-1,"y":0}], // Clock
+  * [{"x":1,"y":-3},{"x":2,"y":-3},{"x":0,"y":-2},{"x":3,"y":-2},{"x":-2,"y":-1},{"x":1,"y":-1},{"x":3,"y":-1},{"x":-2,"y":0},{"x":2,"y":0},{"x":-2,"y":1},{"x":1,"y":2},{"x":-1,"y":3},{"x":0,"y":3}], // Jam
+  * [{"x":-2,"y":-1},{"x":3,"y":-1},{"x":-4,"y":0},{"x":-3,"y":0},{"x":-1,"y":0},{"x":0,"y":0},{"x":1,"y":0},{"x":2,"y":0},{"x":4,"y":0},{"x":5,"y":0},{"x":-2,"y":1},{"x":3,"y":1}], // Pentadecathlon
+  * [{"x":0,"y":-1},{"x":1,"y":-1},{"x":-1,"y":0},{"x":0,"y":0},{"x":0,"y":1}], // R-pentomino
+  * [{"x":-2,"y":-1},{"x":0,"y":0},{"x":-3,"y":1},{"x":-2,"y":1},{"x":1,"y":1},{"x":2,"y":1},{"x":3,"y":1}], // Acorn
+  * [{"x":9,"y":-6},{"x":7,"y":-5},{"x":9,"y":-5},{"x":-3,"y":-4},{"x":-2,"y":-4},{"x":5,"y":-4},{"x":6,"y":-4},{"x":19,"y":-4},{"x":20,"y":-4},{"x":-4,"y":-3},{"x":0,"y":-3},{"x":5,"y":-3},{"x":6,"y":-3},{"x":19,"y":-3},{"x":20,"y":-3},{"x":-15,"y":-2},{"x":-14,"y":-2},{"x":-5,"y":-2},{"x":1,"y":-2},{"x":5,"y":-2},{"x":6,"y":-2},{"x":-15,"y":-1},{"x":-14,"y":-1},{"x":-5,"y":-1},{"x":-1,"y":-1},{"x":1,"y":-1},{"x":2,"y":-1},{"x":7,"y":-1},{"x":9,"y":-1},{"x":-5,"y":0},{"x":1,"y":0},{"x":9,"y":0},{"x":-4,"y":1},{"x":0,"y":1},{"x":-3,"y":2},{"x":-2,"y":2}] // Glider Gun
+  */
   
-  // arr of 
+  // Make arr of pattern objects
+
+  var arrOfPatterns = []
+  arrOfPatterns.PatternObj = function(n, t, l, i, s, p) {
+    this.push({name: n, type: t, lifespan: l, info: i, src: s, rotate: rotate(),  pattern: p})
+    return this
+  }
+
+  arrOfPatterns
+    .PatternObj('Glider','Spaceship','4', 'Gliders travel diagonally at a speed of c/4.', 'images/glider.png', [{"x":-1,"y":-1},{"x":0,"y":0},{"x":1,"y":0},{"x":-1,"y":1},{"x":0,"y":1}])
+    .PatternObj('LWSS', 'Spaceship', '4', 'Random soups will emit one LWSS for approximately every 615 gliders. It moves orthogonally at c/2 and has period 4.', 'images/lwss.png', [{"x":-2,"y":-2},{"x":1,"y":-2},{"x":2,"y":-1},{"x":-2,"y":0},{"x":2,"y":0},{"x":-1,"y":1},{"x":0,"y":1},{"x":1,"y":1},{"x":2,"y":1}])
+    .PatternObj('Clock', 'Oscillator', '2', 'The Clock is the 6th most common oscillator', 'images/clock.png', [{"x":0,"y":-3},{"x":-2,"y":-2},{"x":0,"y":-2},{"x":-1,"y":-1},{"x":1,"y":-1},{"x":-1,"y":0}])
+    .PatternObj('Jam', 'Oscillator', '3', 'The Jam is was found in 1988 and is the 17th most common oscillator', 'images/jam.png', [{"x":1,"y":-3},{"x":2,"y":-3},{"x":0,"y":-2},{"x":3,"y":-2},{"x":-2,"y":-1},{"x":1,"y":-1},{"x":3,"y":-1},{"x":-2,"y":0},{"x":2,"y":0},{"x":-2,"y":1},{"x":1,"y":2},{"x":-1,"y":3},{"x":0,"y":3}])
+    .PatternObj('Pentadecathlon', 'Oscillator', '15', 'The Pentadecathlon is a period 15 pulsing oscillator as it undulates throughout its cycle.', 'images/pentadecathlon.png', [{"x":-2,"y":-1},{"x":3,"y":-1},{"x":-4,"y":0},{"x":-3,"y":0},{"x":-1,"y":0},{"x":0,"y":0},{"x":1,"y":0},{"x":2,"y":0},{"x":4,"y":0},{"x":5,"y":0},{"x":-2,"y":1},{"x":3,"y":1}])
+    .PatternObj('R-pentomino', 'Methuselah', 'na', 'The glider it releases in generation 69, noticed by Richard K. Guy, was the first glider ever observed.', 'images/theR.png', [{"x":0,"y":-1},{"x":1,"y":-1},{"x":-1,"y":0},{"x":0,"y":0},{"x":0,"y":1}])
+    .PatternObj('Acorn', 'Methuselah', 'na', 'The stable pattern that results from the acorn has 633 cells and consists of 41 blinkers.', 'images/acorn.png', [{"x":-2,"y":-1},{"x":0,"y":0},{"x":-3,"y":1},{"x":-2,"y":1},{"x":1,"y":1},{"x":2,"y":1},{"x":3,"y":1}])
+    .PatternObj('Glider Gun', 'Gun', '30', 'The Glider Gun consists of two queen bee shuttles stabilized by two blocks.', 'images/gliderGun.png', [{"x":9,"y":-6},{"x":7,"y":-5},{"x":9,"y":-5},{"x":-3,"y":-4},{"x":-2,"y":-4},{"x":5,"y":-4},{"x":6,"y":-4},{"x":19,"y":-4},{"x":20,"y":-4},{"x":-4,"y":-3},{"x":0,"y":-3},{"x":5,"y":-3},{"x":6,"y":-3},{"x":19,"y":-3},{"x":20,"y":-3},{"x":-15,"y":-2},{"x":-14,"y":-2},{"x":-5,"y":-2},{"x":1,"y":-2},{"x":5,"y":-2},{"x":6,"y":-2},{"x":-15,"y":-1},{"x":-14,"y":-1},{"x":-5,"y":-1},{"x":-1,"y":-1},{"x":1,"y":-1},{"x":2,"y":-1},{"x":7,"y":-1},{"x":9,"y":-1},{"x":-5,"y":0},{"x":1,"y":0},{"x":9,"y":0},{"x":-4,"y":1},{"x":0,"y":1},{"x":-3,"y":2},{"x":-2,"y":2}])
+
+  // Rotate currently selected pattern div and coordinates in arrOfPatterns
+  uI.rotateCurrentPattern = function() {
+    var i = uI.patternCount;
+    // This rotates the coordinates of the pattern and returns what the div rotate should be set to.
+    var divAmountRotated = arrOfPatterns[i].rotate();
+    targetBox.style.transform = "rotate(" + divAmountRotated + "deg)";
+  }
+
+
+  // function that returns a function that rotates the pattern and returns the amount to rotate the div.
+  function rotate() {
+    var currentDegree = 0;
+    return function() {
+      console.log('ROTATED')
+      this.pattern.forEach(function(c) {
+       var x = c.x
+       var y = c.y
+       // rotate
+       c.x = -y
+       c.y = x
+      })
+      currentDegree = currentDegree === 270 ? 0 : currentDegree += 90;
+      console.log(currentDegree)
+      return currentDegree;
+    }
+  }
+
+  // function that takes a pattern and rotates it
+  function rotateCoordinates(arr) {
+    arr.map(function(c) {
+
+    })
+  }
 
   // pattern count toggle 0 - 5 for pattern items, includes target box
   uI.patternCount = 0;
 
   uI.incPatternCount = function() {
-    if(uI.patternCount < 5) {
+    if(uI.patternCount < 7) {
       uI.patternCount++;
       console.log(uI.patternCount)
     }  
@@ -430,6 +484,8 @@ var Engine = (function(global) {
     }  
   }
 
+
+  // Create targetBox 
   var targetBox = document.getElementById('target-box');
   targetBox.addEventListener('click', function() {
     logGrid()
@@ -451,7 +507,7 @@ var Engine = (function(global) {
       uI.draggedOver = true;
       console.log('draggedover')
       // Make array of cells to temporarly activate whatever pattern was selected 
-      uI.arrOfTmpCells = patternArr[uI.patternCount].map(function(c) {
+      uI.arrOfTmpCells = arrOfPatterns[uI.patternCount].pattern.map(function(c) {
         return {x: c.x + currentCell.x, y: c.y + currentCell.y}
       });
       var tempGrid = clone(grid.currentGrid);
@@ -528,12 +584,13 @@ var Engine = (function(global) {
     var tempGrid = clone(grid.currentGrid)
     tempGrid.forEach(function(c) {
       if(c.life) {
-        newObj = {x: c.x - 16, y: c.y - 5}
+        newObj = {x: c.x - 1, y: c.y - 1}
         returnArr.push(newObj)
       }
     })
     console.log(JSON.stringify(returnArr))
   }
+
   
   /****** Public Objects ******/
 
