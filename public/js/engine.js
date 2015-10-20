@@ -7,10 +7,10 @@ var Engine = (function(global) {
 
   /****** Initial grid setup ******/
 
-  // Create grid object that will make avaliable: currentGrid, cache, width and height
+  // Create grid object that will make avaliable: currentGrid, cache, width, and height
   var grid = {};
 
-  // Make initial grid and set alive cells according to startingCellArr
+  // return initial grid and set alive cells according to startingCellArr
   // width, height are the number of cells in each row
   // startingCellArr is an array of cells that will be initially set to alive
   function makeCells(width, height, startingCellArr) {
@@ -55,12 +55,23 @@ var Engine = (function(global) {
   function updateCells() {
     var nextGrid = [];
     grid.currentGrid.forEach(function(x, i) {
-      nextGrid.push(updateCell(x));
-      updateDiv.call(updateCell(x), i); 
+      var updatedCell = updateCell(x)
+      // push updated cell to grid arr
+      nextGrid.push(updatedCell);
+      // update div status of that cell
+      if(!uI.draggedOver) updateDiv.call(updatedCell, i); 
     });
     grid.currentGrid = nextGrid;
     grid.cache.push(grid.currentGrid)
-
+    if(uI.draggedOver) {
+      var tempGrid = clone(grid.currentGrid);
+      uI.arrOfTmpCells.forEach(function(c){
+        // Find the index of this cell in tempGrid and turn the cell on
+        var index = c.x + grid.width * c.y;
+        if(tempGrid[index] !== undefined) tempGrid[index].life = 1;
+      })
+      updateDivs(tempGrid);
+    }
   }
 
   // Take a cell object,
@@ -89,7 +100,7 @@ var Engine = (function(global) {
     var counter = 0;
      for(var i = x-1; i < x + 2; i++) {
       for(var j = y - 1; j < y + 2; j++) {
-       //console.log(i,j)
+        // Checks to see if cell is the current cell
         if(i === x && j === y) {
           continue;
         }
@@ -97,15 +108,15 @@ var Engine = (function(global) {
         if(i > grid.width - 1 || j > grid.height - 1 || i < 0 || j < 0) {
           continue;
         }
+        // Finds the cell in the currentgrid array and checks to see if it is alive
         if(grid.currentGrid[i + grid.width * j].life) {
-          //console.log('found life', grid.currentGrid[i + grid.width * j], i, j)
           counter++;
         }
       }
     }
     return counter;
   }
- 
+
   /****** Create divs in DOM ******/
   var gridSpace = document.getElementById('grid-space')
   var titleSpace = document.getElementById('title-space');
@@ -143,7 +154,7 @@ var Engine = (function(global) {
     // Add the needed amount width to each cell to fill the window
 
     console.log('widthSize '+widthSize, typeof size, typeof widthDiff, typeof w)
-    var widthSize = (size + widthDiff / w); // BUG HERE: the mat is wrong the second time
+    var widthSize = (size + widthDiff / w); //
     console.log('widthSize '+widthSize, 'size ' +size, 'widthDiff ' + widthDiff, 'w '+w)
     // Convert to percentage
     var widthPercent = widthSize / windowWidth * 100;
@@ -158,31 +169,33 @@ var Engine = (function(global) {
       cellDiv.style.height = size + 'px'; 
       cellDiv.style.width = widthPercent + '%'; 
       cellDiv.id = i;
-      // Add the event listener to allow user to change life by click and drag
+      // Add the event listeners to allow user to change life by click and drag
       (function(i) {
         cellDiv.addEventListener('mouseover', function() { 
           if(uI.mouseDown) {
-            var mousedOverDiv = document.getElementById(i)
-            console.log('clicked')
-            mousedOverDiv.style.background = uI.cellAliveColor
+            var currentDivCell = document.getElementById(i)
+            currentDivCell.style.background = uI.cellAliveColor
             grid.currentGrid[i].life = 1;
-            console.log(grid.currentGrid)
             grid.cache[grid.cache.length - 1] = grid.currentGrid;
-            //console.log(JSON.stringify(grid.currentGrid))
-          }     
+          }
+          uI.makeDraggedCell(i) // part of drag and drop UI functionality
         })
         cellDiv.addEventListener('mousedown', function() {
-          var clickedDiv = document.getElementById(i)
+          if(uI.targetBox) {
+            uI.dropPattern();
+            uI.targetBox = false;
+            return;
+          }
+          var currentDivCell = document.getElementById(i)
           if(grid.currentGrid[i].life) {
-            clickedDiv.style.background = uI.cellDeadColor;
+            currentDivCell.style.background = uI.cellDeadColor;
             grid.currentGrid[i].life = 0;
           }
           else {
-            clickedDiv.style.background = uI.cellAliveColor;
+            currentDivCell.style.background = uI.cellAliveColor;
             grid.currentGrid[i].life = 1;
           }  
            grid.cache[grid.cache.length - 1] = grid.currentGrid;
-           //console.log(JSON.stringify(grid.currentGrid))
         })
         gridSpace.appendChild(cellDiv)
       }(i))
@@ -213,7 +226,8 @@ var Engine = (function(global) {
 
   /****** Utilities ******/
 
-  // Return random initial array for a given window size
+  // Return random initial array for a given screensize. param size
+  // is the cellsize in px
   function randomArr(size) {
     returnArr = [];
     var wH = makeWH(size)
@@ -251,6 +265,7 @@ var Engine = (function(global) {
   }
 
   /****** UI ******/
+  // --- Buttons
   uI = {};
   // Checks to see if play button was clicked
   uI.play = false;
@@ -278,6 +293,35 @@ var Engine = (function(global) {
       stepBack()
   })
 
+  // Menu bar
+  var menuBar = document.getElementById('menu-bar');
+  var menuIcon = document.getElementById('menu-icon');
+
+  // Ability to toggle menu bar
+  menuIcon.addEventListener('click', function() {
+    toggleMenuBar()
+  })
+// REFACTOR here .. 
+  var toggleMenuBar = (function() {
+    var menuBarStatus = false;
+    return function() {
+      if(menuBarStatus) {
+        menuBarStatus = false;
+        console.log(menuBarStatus)
+        menuBar.classList.remove('slide-right')
+        menuBar.classList.add('slide-left')
+        //menuBar.style.display = "none";
+      }
+      else {
+        menuBarStatus = true;
+        console.log(menuBarStatus)
+        menuBar.classList.remove('slide-left')
+        menuBar.classList.add('slide-right')
+       // menuBar.style.display = "inline";
+      }
+    }
+  })()
+  
   // Check if mouse is held down
   uI.mouseDown = 0;  
   document.body.onmousedown = function() {
@@ -287,30 +331,9 @@ var Engine = (function(global) {
     uI.mouseDown = 0;
   }
 
-  // Menu bar
-  var menuBar = document.getElementById('menu-bar');
-  var menuIcon = document.getElementById('menu-icon');
+  // --- Menu functionality
 
-  // Ability to toggle menu bar
-  menuIcon.addEventListener('click', function() {
-    toggleMenuBar()
-  })
-
-  var toggleMenuBar = (function() {
-    var menuBarStatus = false;
-    return function() {
-      if(menuBarStatus) {
-        menuBarStatus = false;
-        menuBar.style.display = "none";
-      }
-      else {
-        menuBarStatus = true;
-        menuBar.style.display = "inline";
-      }
-    }
-  })()
-
- // Ability to change colors
+  // Change alive and dead colors
   uI.cellDeadColor = 'black';
   uI.cellAliveColor = 'red';
 
@@ -326,24 +349,145 @@ var Engine = (function(global) {
     updateDivs(grid.currentGrid)
   }
 
-  // Ability to change fade
+  // Change fade
   uI.updateFadeout = function() {
     var allCells = document.getElementsByClassName('cellDiv');
     allCells = Array.prototype.slice.call(allCells);
     var fadeAmount = document.getElementById('fade').value;
     allCells.forEach(function(x) {
-      x.style.transition = fadeAmount + 's';
+      x.style.transition = fadeAmount/1000 + 's';
     })
   }
 
-  // Change cell size and reprint grid BUG HERE
+  // Change cell size and reprint grid
+  uI.size = 15;
   uI.changeSize = function() {
-    var size = document.getElementById('size').value;
-    console.log(size);
-
-    printInitialGrid(size, []);
+    uI.size = document.getElementById('size').value;
+    var randoArr = randomArr(uI.size);
+    printInitialGrid(uI.size, randoArr);
+    applyCurrentSettings()
   }
+
+  // Change interval speed
+  uI.speed = 50;
+  uI.changeSpeed = function() {
+    var inputSpeed = document.getElementById('speed').value;
+    uI.speed = parseInt(inputSpeed);
+  }
+
+   
+  // Reprint grid with all cells set to dead
+  uI.blank = function() {
+    printInitialGrid(uI.size, [])
+    applyCurrentSettings()
+  }
+
+  // Reprint grid with random cells
+  uI.randomize = function() {
+    var randoArr = randomArr(uI.size);
+    printInitialGrid(uI.size, randoArr)
+    applyCurrentSettings()
+  }
+
+  // Ability to change rules
+  uI.changeRules = function(x) {
+    var rules = x || document.getElementById('users-rules').value;
+    Cell.prototype.rules = new Function('n', rules);
+  }
+  
+  // After reprinting the whole grid, user input must be re applied.
+  function applyCurrentSettings(){
+    uI.changeSpeed()
+    uI.updateFadeout()
+  }
+
+  // --- Components for the drag and drop system
+
+  
+  var patternArr = [[{x:0, y:0}, {x:0, y:1}, {x:1, y:0}, {x: -1, y:1},{x: -1, y: -1} ],[],[]]
+  
+  // pattern count toggle 0 - 5 for pattern items, includes target box
+  uI.patternCount = 0;
+
+  uI.incPatternCount = function() {
+    if(uI.patternCount < 5) {
+      uI.patternCount++;
+      console.log(uI.patternCount)
+    }  
+  }
+    uI.decPatternCount = function() {
+    if(uI.patternCount > 0) {
+      uI.patternCount--;
+      console.log(uI.patternCount)
+    }  
+  }
+
+  var targetBox = document.getElementById('target-box');
+  targetBox.addEventListener('click', function() {
+
+    uI.targetBoxToggle();
+        console.log('targetBox: ', uI.targetBox)
+  })
+
+  uI.targetBox = false;
+  uI.targetBoxToggle = function() {
+    uI.targetBox = !uI.targetBox;
+    // disable fade while dragging
+    uI.fade = 0
+  }
+
+  // on rollover of cell
+  uI.makeDraggedCell = function(i) {
+    var currentCell = grid.currentGrid[i];
+    if(uI.targetBox) {    
+      uI.draggedOver = true;
+      console.log('draggedover')
+      // Make array of cells to temporarly activate whatever pattern was selected 
+      uI.arrOfTmpCells = patternArr[uI.patternCount].map(function(c) {
+        return {x: c.x + currentCell.x, y: c.y + currentCell.y}
+      });
+      var tempGrid = clone(grid.currentGrid);
+      uI.arrOfTmpCells.forEach(function(c){
+        var index = c.x + grid.width * c.y;
+        if(tempGrid[index] !== undefined) tempGrid[index].life = 1;
+      })
+      updateDivs(tempGrid)
+    }
+    uI.currentTempGrid = tempGrid; // make available in case of a click
+  }
+
+  menuBar.addEventListener('mouseover', function() {
+    uI.draggedOver = false;
+    if(!uI.play) {
+      updateDivs(grid.currentGrid)
+    }
+    console.log('draggedOver: ',uI.draggedOver)
+  })
+
+  // on dropping the pattern
+  uI.dropPattern = function() {
+    console.log('calledDROP')
+    grid.currentGrid = uI.currentTempGrid;
+    grid.cache.push(grid.currentGrid);
+    updateDivs(grid.currentGrid);
+    uI.draggedOver = false;
+    uI.targetBox = false;
+    console.log('draggedOver: ', uI.draggedOver)
+    console.log('targetBox: ', uI.targetBox)
+  }
+
   /****** Library ******/
+
+  // Clone an array of cell objects
+  function clone(arr) {
+    var returnArr = [];
+    arr.forEach(function(x) {
+      var clonedCell = new Cell(x.x, x.y);
+      clonedCell.life = x.life;
+      returnArr.push(clonedCell);
+    }) 
+    return returnArr;
+  }
 
   // Take a callback and pass x and y to it for a given grid
   function traverseGrid(height, width, fn) {
@@ -370,6 +514,8 @@ var Engine = (function(global) {
     }
   }
   
+  /****** Public Objects ******/
+
   // Public functions for app.js
   return {
     printInitialGrid: printInitialGrid,

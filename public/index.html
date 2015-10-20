@@ -17,23 +17,45 @@
   </div>
   <div id="menu-bar">
     <form action="">
-      <h4>Alive Cells</h4>
-      <input id="alive-color-input" value="red" type="text" />
+      <h4>color: alive</h4>
+      <input class="small-input" id="alive-color-input" value="red" type="text" />
       <button type="button" onclick="Engine.uI.updateColor('cellAliveColor')">apply</button>
-      <br>
-      <h4>Dead Cells</h4>
-      <input id="dead-color-input" value="black" type="text" />
+      <div class="spacer"></div>
+      <h4>color: dead</h4>
+      <input class="small-input" id="dead-color-input" value="black" type="text" />
       <button type="button" onclick="Engine.uI.updateColor('cellDeadColor')">apply</button>
-      <h4>Set fade (seconds)</h4>
-      <input id="fade" value=".6" type="text" />
+      <div class="spacer"></div><div class="spacer"></div>
+      <h4>Set fade <span class="small-text">(ms)</span></h4>
+      <input class="small-input" id="fade" value="0" type="number" />
       <button type="button" onclick="Engine.uI.updateFadeout()">apply</button>
-      <h4>Set size (px)</h4>
-      <input id="size" value="15" type="number" />
+      <h4>Set cell size <span class="small-text">(px)</span></h4>
+      <input class="small-input" id="size" value="15" type="number" />
       <button type="button" onclick="Engine.uI.changeSize()">apply</button>
-      <h4>Set speed (ms)</h4>
-      <input id="" value="50" type="number" />
-      <button type="button" onclick="Engine.uI.changeSpeed">apply</button>
+      <h4>Set interval speed <span class="small-text">(ms)</span></h4>
+      <input class="small-input" id="speed" value="50" type="number" />
+      <button type="button" onclick="Engine.uI.changeSpeed()">apply</button>
+      <div class="spacer"></div><div class="spacer"></div>
+      <button type="button" id="clear" onclick="Engine.uI.blank()">Clear</button>
+
+      <button type="button"  onclick="Engine.uI.randomize()">Randomize</button>
+      <div class="spacer"></div><div class="spacer"></div>
+      <h4>Set your own rules!</h4>
+      <textarea id="users-rules" cols="29" rows="6">
+    if(n < 2) this.life = 0;
+    if(n === 2) this.life = this.life;
+    if(n > 3) this.life = 0;
+    if(n === 3) this.life = 1;
+      </textarea>
       <br>
+      <button type="button" onclick="Engine.uI.changeRules()">apply</button>
+      <div class="spacer"></div><div class="spacer"></div>
+      <h4>Click and place!</h4>
+      <div id="wrapper">
+        <div id="target-box"></div>
+        <div class="spacer"></div>
+        <button type="button" onclick="Engine.uI.decPatternCount()"><--</button>
+        <button type="button" onclick="Engine.uI.incPatternCount()">--></button>
+      </div>
     </form>
   </div>
   <div id="grid-space"></div>
