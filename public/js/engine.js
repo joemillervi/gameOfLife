@@ -205,8 +205,10 @@ var Engine = (function(global) {
     }
   }
   
-  // update all divs given a array of cell objects (Used in stepBack)
-  // does NOT update the grid or cells
+  /**
+  * update all divs given a array of cell objects (Used in stepBack)
+  * does NOT update the grid or cells
+  */
   function updateDivs(arr) {
     arr.forEach(function(x, i) {
       updateDiv.call(x, i)
