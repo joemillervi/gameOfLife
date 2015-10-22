@@ -1,15 +1,18 @@
 body {
-  background-color: #6161B;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
 }
 
+h4 {
+  margin:0; 
+  padding:0;
+}
+
 @font-face {
   font-family: arkhip;
   src: url(PrimeLight.otf);
-  font-weight:;
 }
 
 @font-face {
@@ -22,70 +25,34 @@ body {
   src: url(Moon_Bold.otf);
 }
 
-#wrapper {
-
-}
-
-.cellDiv {
-  float:left;
-  border-style:;
- /* transition: .3s; */
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .spacer {
   height:.5em;
 }
 
+.cellDiv {
+  float:left;
+}
+
 #title-space {
   text-align: center;
   font-size: 1.7em;
-  color: black;
-  position:relative;
   font-family: arkhip;
 }
 
 #title {
-  position: relative;
   display: inline-block;
+  margin-right: .7em;
 }
 
 #controls {
   position: relative;
   display: inline-block;
   top:.2em;
-}
-
-button {
-  font-family:moon ;
-  padding:;
-  font-size:1em;
-}
-
-#rotate {
-  font-size: .8em;
-  padding:2px 4px 2px 5px;
-  position: relative;
-  left:4px;
-
-}
-
-input:focus, textarea:focus {
-  outline:none;
-     border: solid 1px #707070;
-  box-shadow: 0 0 2px 1px #969696;
-}
-input {
- font-size:.8em; 
-}
-
-.small-input {
-  width:4em;
-}
-
-#users-rules {
-  background-color: #121415;
-  color:white;
-  font-size:.8em;
 }
 
 #menu-icon {
@@ -97,29 +64,28 @@ input {
 
 #menu-bar {
   position:absolute;
-  height:77%;
-  width:250px;
+  height:594px;
+  width:275px;
   background-color: #16161B;
   color: white;
   font-family: moonBold;
-  left: -296px;
-  padding: 23px;
-  text-align: ;
+  left: -314px;
+  padding: 18px;
+  padding-bottom: 27px;
 }
-
-
 
 .slide-right {
   animation: slideRight .07s;  
   animation-fill-mode: forwards;
 }
+
 @keyframes slideRight {
     0% {
         transform: translate3d(0px, 0px, 0px);
         animation-timing-function: ease-out;
     }
     100% {
-        transform: translate3d(296px, 0px, 0px);
+        transform: translate3d(314px, 0px, 0px);
     }
 }
 
@@ -129,7 +95,7 @@ input {
 }
 @keyframes slideLeft {
     0% {
-        transform: translate3d(296px, 0px, 0px);
+        transform: translate3d(314px, 0px, 0px);
         animation-timing-function: ease-out;
     }
     100% {
@@ -137,45 +103,75 @@ input {
     }
 }
 
-#target-box {
-  width:116px;
-  height:116px;
-  background-color: white;
-
-  display: inline-block;
-  background-image: url('../images/glider.png');
+button {
+  font-family: moon;
+  font-size:1em;
 }
 
-#explination {
-  height:116px;
-  width: 130px;
-  background-color: ;
-  float:right;
-  display:inline-block;
-  font-family: monospace;
+select {
+  border-radius: 50px;
 }
 
+input:focus, textarea:focus {
+  outline:none;
+  border: solid 1px #707070;
+  box-shadow: 0 0 2px 1px #969696;
+}
+
+input {
+ font-size:.8em; 
+}
+
+.small-input {
+  width: 4em;
+  border-radius: 3px;
+}
 
 .small-text {
-  font-family: moon;
-  color:#DADADA;
-}
-
-h4 {
-  margin:0; 
-  padding:0;
-}
-
-.inline {
-  display: inline;
-}
-
-#right {
-
+  font-family: monospace;
+  color: #DADADA;
+  font-size: 1em;
 }
 
 #clear {
   float:left;
   display: inline-block;
   margin-right: .2em;
+}
+
+#users-rules {
+  background-color: #121415;
+  color: white;
+  font-size: .8em;
+}
+
+#target-box {
+  width: 116px;
+  height: 116px;
+  background-color: white;
+  display: inline-block;
+  background-image: url('../images/glider.png');
+  //transition-duration: .1s;
+  //transition-timing-function: ease-out;
+}
+
+#explination {
+  height: 116px;
+  width: 159px;
+  float:right;
+  display:inline-block;
+  font-family: monospace;
+  position: relative;
+  left: 4px;
+}
+
+#rotate {
+  font-size: .8em;
+  padding: 2px 4px 2px 5px;
+  position: relative;
+  left: 4px;
+}
+
+.inline {
+  display: inline;
 }

@@ -2,7 +2,6 @@
 <head>
 	<meta charset="utf-8" />
   <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
-
 </head>
 <body>
   <img id="menu-icon" src="images/menu-icon.png" alt="menu">
@@ -10,123 +9,73 @@
     <div id="title">Conway's Game of Life</div>
     <div id="controls">
       <img id="step-back" src="images/stepBack-icon.png" alt="step back" />
-      <img id="pause" src="images/pause-icon.png" alt="pause" />
-      <img id="play" src="images/play-icon.png" alt="play" />
+      <img id="play-pause" src="images/play-icon.png" alt="play or pause" />
       <img id="fwd" src="images/fwd-icon.png" alt="next step" />
     </div>
   </div>
   <div id="menu-bar">
-    <form action="">
-      <h4>color: alive</h4>
-      <input class="small-input" id="alive-color-input" value="red" type="text" />
-      <button type="button" onclick="Engine.uI.updateColor('cellAliveColor')">apply</button>
-      <div class="spacer"></div>
-      <h4>color: dead</h4>
-      <input class="small-input" id="dead-color-input" value="black" type="text" />
-      <button type="button" onclick="Engine.uI.updateColor('cellDeadColor')">apply</button>
-      <div class="spacer"></div><div class="spacer"></div>
-      <h4>Set fade <span class="small-text">(ms)</span></h4>
-      <input class="small-input" id="fade" value="0" type="number" />
-      <button type="button" onclick="Engine.uI.updateFadeout()">apply</button>
-      <h4>Set cell size <span class="small-text">(px)</span></h4>
-      <input class="small-input" id="size" value="15" type="number" />
-      <button type="button" onclick="Engine.uI.changeSize()">apply</button>
-      <h4>Set interval speed <span class="small-text">(ms)</span></h4>
-      <input class="small-input" id="speed" value="50" type="number" />
-      <button type="button" onclick="Engine.uI.changeSpeed()">apply</button>
-      <div class="spacer"></div><div class="spacer"></div>
-      <button type="button" id="clear" onclick="Engine.uI.blank()">Clear</button>
-
-      <button type="button"  onclick="Engine.uI.randomize()">Randomize</button>
-      <div class="spacer"></div><div class="spacer"></div>
-      <h4>Set your own rules!</h4>
-      <textarea id="users-rules" cols="29" rows="6">
-    if(n < 2) this.life = 0;
-    if(n === 2) this.life = this.life;
-    if(n > 3) this.life = 0;
-    if(n === 3) this.life = 1;
-      </textarea>
-      <br>
-      <button type="button" onclick="Engine.uI.changeRules()">apply</button>
-      <div class="spacer"></div><div class="spacer"></div>
-      <h4>Click and place!</h4>
-      <div id="wrapper">
-        <div id="target-box"></div>      
-        <div id="explination">
-          <div class="inline">name: </div><div class="inline" id="name">Glider</div>
-          <div class="inline">type: </div><div class="inline" id="type">Spaceship</div>
-          <div class="inline">period: </div><div class="inline" id="life-span">∞ </div>
-          <div class="inline">info: </div><div class="inline" id="life-span">Gliders travel diagonally at a speed of c/4.</div>
-        </div>
-        <div class="spacer"></div>
-        <button type="button" onclick="Engine.uI.decPatternCount()"><--</button>
-        <button type="button" onclick="Engine.uI.incPatternCount()">--></button>
-        <button type="button" id="rotate" onclick="Engine.uI.rotateCurrentPattern()">⤵</button>
-
+    <h4>color: alive</h4>
+    <select id="alive-color-input" onChange="Engine.uI.updateColor('cellAliveColor')">
+      <option value="red">red</option>
+      <option value="blue">blue</option>
+      <option value="yellow">yellow</option>
+      <option value="orange">orange</option>
+      <option value="white">white</option>
+      <option value="black">black</option>
+      <option value="lightcoral">lightcoral</option>
+      <option value="midnightblue">midnightblue</option>
+    </select>
+    <h4>color: dead</h4>
+    <select id="dead-color-input" value="black" onChange="Engine.uI.updateColor('cellDeadColor')">
+      <option value="red">red</option>
+      <option value="blue">blue</option>
+      <option value="yellow">yellow</option>
+      <option value="orange">orange</option>
+      <option value="white">white</option>
+      <option value="black" selected="selected">black</option>
+      <option value="lightcoral">lightcoral</option>
+      <option value="midnightblue">midnightblue</option>
+    </select>
+    <div class="spacer"></div><div class="spacer"></div>
+    <h4>Set fade <span class="small-text">(ms)</span></h4>
+    <input class="small-input" id="fade" value="0" type="text" />
+    <button type="button" onclick="Engine.uI.updateFadeout()">apply</button>
+    <h4>Set cell size <span class="small-text">(10 <> 100 px)</span></h4>
+    <input class="small-input" id="size" value="15" type="number" />
+    <button type="button" onclick="Engine.uI.changeSize()">apply</button>
+    <h4>Set interval<span class="small-text">(ms)</span></h4>
+    <input class="small-input" id="interval" value="50" type="text" />
+    <button type="button" onclick="Engine.uI.changeInterval()">apply</button>
+    <div class="spacer"></div><div class="spacer"></div>
+    <button type="button" id="clear" onclick="Engine.uI.clear()">Clear</button>
+    <button type="button"  onclick="Engine.uI.randomize()">Randomize</button>
+    <div class="spacer"></div><div class="spacer"></div>
+    <h4>Set your own rules!<a target="_blank" href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Rules">          (?)</a></h4>
+    <span class="small-text">n = number of alive neighbor cells</span>
+    <textarea id="users-rules" cols="29" rows="6">
+  if(n < 2) this.life = 0;
+  if(n === 2) this.life = this.life;
+  if(n > 3) this.life = 0;
+  if(n === 3) this.life = 1;
+    </textarea><br />
+    <button type="button" onclick="Engine.uI.changeRules()">apply</button>
+    <div class="spacer"></div><div class="spacer"></div>
+    <h4>Click and place!</h4>
+    <div id="wrapper">
+      <div id="target-box"></div>      
+      <div id="explination">
+        <div class="inline">name: </div><div class="inline" id="name">Glider</div><br />
+        <div class="inline">type: </div><div class="inline" id="type">Spaceship</div><br />
+        <div class="inline">period: </div><div class="inline" id="period">∞ </div><br />
+        <div class="inline">info: </div><div class="inline" id="info">Gliders travel diagonally at a speed of c/4.</div>
       </div>
-    </form>
+      <div class="spacer"></div>
+      <button type="button" onclick="Engine.uI.decPattern()"><--</button>
+      <button type="button" onclick="Engine.uI.incPattern()">--></button>
+      <button type="button" id="rotate" onclick="Engine.uI.rotateCurrentPattern()">⤵</button>
+    </div>
   </div>
   <div id="grid-space"></div>
- </body>
-
-<head>
-  <style type="text/css">
-
-  
-
-  </style>
-
-  <script src="js/engine.js"></script>
-  <script src="js/app.js"></script>
-
-
-  <script>
-
-
-
-
-  // gridSpace = document.getElementById('grid-space')
-  //console.log(gridSpace)
-
-
-
-/*
-  console.log('width: ' + window.innerWidth, 'height: ' + window.innerHeight)
-
-  var windowWidth = window.innerWidth;
-  var windowHeight = window.innerHeight;
-  var size = 100;
-  // Calculate the number of cells we can fit in the width and height (there will be extra space)
-  w = Math.floor(windowWidth / size);
-  h = Math.floor(windowHeight / size);
-  console.log('h: ' +h)
-
-  // Calculate the extra space
-  var widthDiff = windowWidth % size;
-  var heightDiff = windowHeight % size;
-  console.log('heightDiff: ' + heightDiff)
-  // Add the needed amount of height and width to each cell to fill the window
-  var widthSize = size + widthDiff / w;
-  
-  var heightDiffPerCell = heightDiff / h;
-  console.log(size)
-  var heightSize = size + heightDiffPerCell;
-  console.log('HDperCell: ' + heightDiffPerCell)
-  console.log('heightSize: ' + heightSize)
-  // Begin to alter the DOM
-  var parentDiv = document.createElement('div');
-  parentDiv.className = 'grid';  
-  for(var y = 0; y < h; y++) {
-    for(var x = 0; x < w; x++) {
-      var cellDiv = document.createElement('div')
-      cellDiv.className = 'cellDiv'
-      cellDiv.style.height = heightSize + 'px'; 
-      cellDiv.style.width = widthSize + 'px'; 
-      parentDiv.appendChild(cellDiv)
-    }
-  }
-
-  
-  document.body.appendChild(parentDiv)  
-  */
-  </script>
+</body>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>

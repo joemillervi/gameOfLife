@@ -13,5 +13,5 @@ Engine.printInitialGrid(Engine.uI.size, []);
   if(Engine.uI.play) Engine.updateCells();
   window.setTimeout(function() {
     return playing();
-  }, Engine.uI.speed);
+  }, Engine.uI.interval);
 })()
